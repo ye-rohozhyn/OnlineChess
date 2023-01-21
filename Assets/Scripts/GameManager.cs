@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     private BoardField[,] _virtualBoard = new BoardField[t_boardSize, t_boardSize];
     private Camera _playerCamera;
     private ChessPiece _currentPiece;
+    private static int t_countMoves; 
 
     private void Awake()
     {
@@ -43,6 +44,7 @@ public class GameManager : MonoBehaviour
                         _currentPiece.MoveTo(field);
                         _currentPiece = null;
                         DisableFields();
+                        t_countMoves++;
 
                         return;
                     }
@@ -64,5 +66,10 @@ public class GameManager : MonoBehaviour
         {
             field.Disable();
         }
+    }
+
+    public static int GetCountMoves()
+    {
+        return t_countMoves;
     }
 }
