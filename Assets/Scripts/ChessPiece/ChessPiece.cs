@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class ChessPiece : MonoBehaviour
 {
-    [SerializeField] private PieceType pieceType;
     [SerializeField] private TeamColor team;
 
+    private PieceType _pieceType = PieceType.None;
     private Outline _pieceOutline;
     private BoardField _field;
     private int _countMoves = 0;
 
-    public PieceType PieceType { get { return pieceType; } }
+    public PieceType PieceType { set { _pieceType = value; } get { return _pieceType; } }
     public TeamColor Team { get { return team; } }
     public BoardField Field { set { _field = value; } get { return _field; } }
     public int CountMoves { set { _countMoves = value; } get { return _countMoves; } }
@@ -92,7 +92,7 @@ public class ChessPiece : MonoBehaviour
 
 public enum PieceType
 {
-    Pawn, Rook, Knight, Bishop, Queen, King
+    None, Pawn, Rook, Knight, Bishop, Queen, King
 }
 
 public enum TeamColor

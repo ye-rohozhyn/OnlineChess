@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2629218055262281067}
   - component: {fileID: 301094439306783072}
   - component: {fileID: 2071767357276495922}
-  - component: {fileID: 1486219662052178417}
+  - component: {fileID: -125636222400171382}
   - component: {fileID: -4200599167868709470}
   m_Layer: 0
   m_Name: D_Bishop
@@ -85,7 +85,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &1486219662052178417
+--- !u!114 &-125636222400171382
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,7 +94,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3098445970930882175}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 802a37b0931925345a5be9662933ec77, type: 3}
+  m_Script: {fileID: 11500000, guid: 8d2cb7aa7b0365144b4076ef8bc290d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   pieceType: 3

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6246778710544748169}
   - component: {fileID: 4105349669999823728}
   - component: {fileID: 5263572504158771794}
-  - component: {fileID: 1266261421805762334}
+  - component: {fileID: -2461334935011969099}
   - component: {fileID: -8508146197471150867}
   m_Layer: 0
   m_Name: L_Queen
@@ -85,7 +85,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &1266261421805762334
+--- !u!114 &-2461334935011969099
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,10 +94,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 9035220902788822580}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 802a37b0931925345a5be9662933ec77, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c668bb8b46ace24ab2caa07b765c525, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pieceType: 4
   team: 0
 --- !u!114 &-8508146197471150867
 MonoBehaviour:

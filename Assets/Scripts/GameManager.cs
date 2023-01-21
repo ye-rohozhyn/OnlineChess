@@ -43,16 +43,16 @@ public class GameManager : MonoBehaviour
                     {
                         _currentPiece.MoveTo(field);
                         _currentPiece = null;
-                        DisableFields();
                         t_countMoves++;
+                        DisableFields();
 
                         return;
                     }
 
+                    DisableFields();
                     if (piece)
                     {
                         _currentPiece = piece;
-                        DisableFields();
                         piece.GetPossibleMoves(_virtualBoard, true);
                     }
                 }

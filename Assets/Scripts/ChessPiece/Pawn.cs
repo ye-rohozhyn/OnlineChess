@@ -6,6 +6,11 @@ public class Pawn : ChessPiece
     private BoardField[,] _virtualBoard;
     private int _lastMoveNumber = 0;
 
+    private void Start()
+    {
+        PieceType = PieceType.Pawn;
+    }
+
     public override int GetPossibleMoves(BoardField[,] virtualBoard, bool enableFields)
     {
         _virtualBoard = virtualBoard;

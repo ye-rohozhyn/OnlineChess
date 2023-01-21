@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4700971052651042180}
   - component: {fileID: 5926574943974482638}
   - component: {fileID: 7245802592262444822}
-  - component: {fileID: 5155488100947088623}
+  - component: {fileID: -3952525360242748100}
   - component: {fileID: 1618493927601020463}
   m_Layer: 0
   m_Name: D_Rook
@@ -85,7 +85,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5155488100947088623
+--- !u!114 &-3952525360242748100
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,7 +94,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 174496349715099128}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 802a37b0931925345a5be9662933ec77, type: 3}
+  m_Script: {fileID: 11500000, guid: 17d42fbcf8b3160478d8ec7cedc2dd88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   pieceType: 1

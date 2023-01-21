@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 979386829424639734}
   - component: {fileID: 8514122644365125211}
   - component: {fileID: 1299498197134721352}
-  - component: {fileID: -6285414871696991452}
+  - component: {fileID: 8052366270625687558}
   - component: {fileID: -4526748429347618598}
   m_Layer: 0
   m_Name: L_Rook
@@ -85,7 +85,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &-6285414871696991452
+--- !u!114 &8052366270625687558
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,7 +94,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 464693295859467445}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 802a37b0931925345a5be9662933ec77, type: 3}
+  m_Script: {fileID: 11500000, guid: 17d42fbcf8b3160478d8ec7cedc2dd88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   pieceType: 1
