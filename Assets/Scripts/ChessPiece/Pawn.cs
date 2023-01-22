@@ -103,7 +103,7 @@ public class Pawn : ChessPiece
         Field = targetField;
         targetField.ClearChessPiece();
         targetField.SetChessPiece(this);
-        transform.position = targetField.transform.position;
+        StartCoroutine(MoveToTarget(targetField.transform));
         CountMoves++;
         _lastMoveNumber = GameManager.GetCountMoves() + 1;
     }
