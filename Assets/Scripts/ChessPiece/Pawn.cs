@@ -22,17 +22,21 @@ public class Pawn : ChessPiece
 
         if (Team == TeamColor.White & targetY >= 0 || Team == TeamColor.Black & targetY < 8)
         {
-            if (CountMoves == 0 & CheckField(virtualBoard[targetX, targetY], enableFields))
+            if (CheckField(virtualBoard[targetX, targetY], enableFields))
             {
                 possibleMoves++;
-                targetY = Team == TeamColor.White ? (Field.Y - 2) : (Field.Y + 2);
 
-                if (Team == TeamColor.White & targetY >= 0 || Team == TeamColor.Black & targetY < 8)
+                if (CountMoves == 0)
                 {
-                    if (CheckField(virtualBoard[targetX, targetY], enableFields)) possibleMoves++;
-                }
+                    targetY = Team == TeamColor.White ? (Field.Y - 2) : (Field.Y + 2);
 
-                targetY = Team == TeamColor.White ? (Field.Y - 1) : (Field.Y + 1);
+                    if (Team == TeamColor.White & targetY >= 0 || Team == TeamColor.Black & targetY < 8)
+                    {
+                        if (CheckField(virtualBoard[targetX, targetY], enableFields)) possibleMoves++;
+                    }
+
+                    targetY = Team == TeamColor.White ? (Field.Y - 1) : (Field.Y + 1);
+                }
             }
 
             targetX = Field.X - 1;
@@ -48,9 +52,9 @@ public class Pawn : ChessPiece
                     Pawn pawn = virtualBoard[targetX, Field.Y].GetChessPiece().GetComponent<Pawn>();
                     if (pawn)
                     {
-                        if (pawn.CountMoves == 1 & pawn._moveOn2Fields & pawn._lastMoveNumber == GameManager.GetCountMoves())
+                        if (pawn.Team != Team & pawn.CountMoves == 1 & pawn._moveOn2Fields & pawn._lastMoveNumber == GameManager.GetCountMoves())
                         {
-                            if (CheckField(virtualBoard[targetX, targetY], enableFields)) 
+                            if (CheckField(virtualBoard[targetX, targetY], enableFields))
                                 possibleMoves++;
                         }
                     }
@@ -70,7 +74,7 @@ public class Pawn : ChessPiece
                     Pawn pawn = virtualBoard[targetX, Field.Y].GetChessPiece().GetComponent<Pawn>();
                     if (pawn)
                     {
-                        if (pawn.CountMoves == 1 & pawn._moveOn2Fields & pawn._lastMoveNumber == GameManager.GetCountMoves())
+                        if (pawn.Team != Team & pawn.CountMoves == 1 & pawn._moveOn2Fields & pawn._lastMoveNumber == GameManager.GetCountMoves())
                         {
                             if (CheckField(virtualBoard[targetX, targetY], enableFields))
                                 possibleMoves++;
@@ -103,7 +107,7 @@ public class Pawn : ChessPiece
         Field = targetField;
         targetField.ClearChessPiece();
         targetField.SetChessPiece(this);
-        StartCoroutine(MoveToTarget(targetField.transform));
+        StartCoroutine(Move(targetField.transform));
         CountMoves++;
         _lastMoveNumber = GameManager.GetCountMoves() + 1;
     }
@@ -121,9 +125,15 @@ public class Pawn : ChessPiece
     private bool CheckAttackField(BoardField field, bool enableFields)
     {
         ChessPiece piece = field.GetChessPiece();
-        
-        if (piece) 
-            if (piece.Team != Team & enableFields) field.Enable();
+
+        if (piece)
+        {
+            if (piece.Team != Team & enableFields)
+            {
+                field.Enable();
+                return true;
+            }
+        }
 
         return false;
     }

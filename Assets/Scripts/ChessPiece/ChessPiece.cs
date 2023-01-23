@@ -5,7 +5,7 @@ public class ChessPiece : MonoBehaviour
 {
     [SerializeField] private TeamColor team;
     [SerializeField] private AnimationCurve yCurve;
-    [SerializeField] private float animationTime = 0.2f;
+    [SerializeField] private float animationSpeed = 1f;
 
     private PieceType _pieceType = PieceType.None;
     private Outline _pieceOutline;
@@ -38,24 +38,28 @@ public class ChessPiece : MonoBehaviour
         Field = targetField;
         targetField.ClearChessPiece();
         targetField.SetChessPiece(this);
-        StartCoroutine(MoveToTarget(targetField.transform));
+        StartCoroutine(Move(targetField.transform));
         CountMoves++;
     }
 
-    protected IEnumerator MoveToTarget(Transform target)
+    protected IEnumerator Move(Transform target)
     {
         Vector3 fromPos = transform.position;
         Vector3 endPos = target.position;
         Vector3 targetPos;
+        float progress = 0f;
 
-        for (float t = 0f; t <= 1f; t += Time.deltaTime / animationTime)
+        while (progress <= 1)
         {
-            targetPos = fromPos + (endPos - fromPos) * t;
-            targetPos.y = yCurve.Evaluate(t);
+            targetPos = fromPos + (endPos - fromPos) * progress;
+            targetPos.y = yCurve.Evaluate(progress);
             transform.position = targetPos;
+            progress += Time.deltaTime / animationSpeed;
 
             yield return null;
         }
+
+        transform.position = endPos;
     }
 
     public virtual void Death()

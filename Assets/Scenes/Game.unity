@@ -397,6 +397,7 @@ MonoBehaviour:
   boardLayer:
     serializedVersion: 2
     m_Bits: 64
+  limitFPS: 60
 --- !u!4 &1287487733
 Transform:
   m_ObjectHideFlags: 0

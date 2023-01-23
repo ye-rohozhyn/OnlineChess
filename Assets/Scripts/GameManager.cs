@@ -8,6 +8,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GenerateChessPieces generateChessPieces;
     [SerializeField] private LayerMask boardLayer;
 
+    [Header("Settings")]
+    [SerializeField] private LimitFrameRate limitFPS;
+
     private static int t_boardSize = 8;
     private BoardField[,] _virtualBoard = new BoardField[t_boardSize, t_boardSize];
     private Camera _playerCamera;
@@ -16,6 +19,8 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        Application.targetFrameRate = (int)limitFPS;
+
         _playerCamera = Camera.main;
 
         generateVirtualBoard.GenerateBoard(t_boardSize);
@@ -72,4 +77,13 @@ public class GameManager : MonoBehaviour
     {
         return t_countMoves;
     }
+}
+
+public enum LimitFrameRate
+{
+    limit0 = 0,
+    limit60 = 60,
+    limit90 = 90,
+    limit120 = 120,
+    limit240 = 240
 }
