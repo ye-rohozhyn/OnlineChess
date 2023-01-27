@@ -21,7 +21,25 @@ public class Pawn : ChessPiece
         targetY = Team == TeamColor.White ? (Field.Y - 1) : (Field.Y + 1);
         targetX = Field.X;
 
-        if (Team == TeamColor.White & targetY >= 0 || Team == TeamColor.Black & targetY < 8)
+        ChessPiece king = GameManager.singleton.FindKing(Team);
+        int checkCount = GameManager.singleton.GetCheckCount(king.Field.X, king.Field.Y).Count;
+
+        if (!PreventCheck(virtualBoard, Field.X, Field.Y) & checkCount == 0)
+        {
+            if (ProtectDirection.Count == 0) return 0;
+
+            foreach (BoardField field in ProtectDirection)
+            {
+                if (enableFields)
+                {
+                    field.Enable();
+                    possibleMoves++;
+                }
+            }
+        }
+        else
+        {
+            if (Team == TeamColor.White & targetY >= 0 || Team == TeamColor.Black & targetY < 8)
         {
             if (CheckField(virtualBoard[targetX, targetY], enableFields)) possibleMoves++;
 
@@ -81,6 +99,7 @@ public class Pawn : ChessPiece
                     }
                 }
             }
+        }
         }
 
         if (possibleMoves > 0 & enableFields) EnableSelectOutline();
@@ -150,5 +169,75 @@ public class Pawn : ChessPiece
         }
 
         return false;
+    }
+
+    protected override void CreateProtectDirection(BoardField[,] virtualBoard, int x, int y)
+    {
+        ProtectDirection.Clear();
+        ChessPiece pawn = virtualBoard[x, y].GetChessPiece();
+        int targetY = Team == TeamColor.White ? (Field.Y - 1) : (Field.Y + 1);
+
+        if ((AttackingPiece.PieceType == PieceType.Rook || AttackingPiece.PieceType == PieceType.Queen) & AttackingPiece.Field.X == pawn.Field.X)
+        {
+            ChessPiece piece = virtualBoard[x, targetY].GetChessPiece();
+
+            if (!piece)
+            {
+                ProtectDirection.Add(virtualBoard[x, targetY]);
+                targetY = Team == TeamColor.White ? (Field.Y - 2) : (Field.Y + 2);
+
+                if (CountMoves == 0)
+                {
+                    piece = virtualBoard[x, targetY].GetChessPiece();
+
+                    if (!piece)
+                    {
+                        ProtectDirection.Add(virtualBoard[x, targetY]);
+                    }
+                }
+            }
+        }
+        else if ((AttackingPiece.PieceType == PieceType.Bishop || AttackingPiece.PieceType == PieceType.Queen) & AttackingPiece.Field.Y - pawn.Field.Y == -1)
+        {
+            ChessPiece rPiece = virtualBoard[x + 1, targetY].GetChessPiece();
+
+            if (rPiece)
+            {
+                ChessPiece lPiece = virtualBoard[x - 1, targetY].GetChessPiece();
+
+                if (rPiece.Team != Team)
+                {
+                    if (lPiece)
+                        if (lPiece.Team != Team) return;
+
+                    if (rPiece.PieceType == PieceType.Bishop || rPiece.PieceType == PieceType.Queen)
+                    {
+                        ProtectDirection.Add(rPiece.Field);
+                    }
+                }
+                else
+                {
+                    if (lPiece)
+                    {
+                        if (lPiece.Team != Team & lPiece.PieceType == PieceType.Bishop || lPiece.PieceType == PieceType.Queen)
+                        {
+                            ProtectDirection.Add(lPiece.Field);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                ChessPiece lpiece = virtualBoard[x - 1, targetY].GetChessPiece();
+
+                if (lpiece)
+                {
+                    if (lpiece.Team != Team & lpiece.PieceType == PieceType.Bishop || lpiece.PieceType == PieceType.Queen)
+                    {
+                        ProtectDirection.Add(lpiece.Field);
+                    }
+                }
+            }
+        }
     }
 }

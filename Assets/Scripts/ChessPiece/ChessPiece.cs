@@ -94,6 +94,8 @@ public class ChessPiece : MonoBehaviour
         int kingX = king.Field.X, kingY = king.Field.Y;
         _attackingPiece = null;
 
+        if (CheckBackDir(virtualBoard, virtualBoard[x, y], virtualBoard[kingX, kingY])) return true;
+
         if (x > kingX & y < kingY) //top right
         {
             int targetX = x + 1, targetY = y - 1;
@@ -104,8 +106,6 @@ public class ChessPiece : MonoBehaviour
 
                 if (piece)
                 {
-                    print(piece);
-
                     if ((piece.PieceType == PieceType.Bishop || piece.PieceType == PieceType.Queen) & piece.Team != Team)
                     {
                         _attackingPiece = piece;
@@ -149,8 +149,6 @@ public class ChessPiece : MonoBehaviour
 
                 if (piece)
                 {
-                    print(piece);
-
                     if ((piece.PieceType == PieceType.Bishop || piece.PieceType == PieceType.Queen) & piece.Team != Team)
                     {
                         _attackingPiece = piece;
@@ -194,8 +192,6 @@ public class ChessPiece : MonoBehaviour
 
                 if (piece)
                 {
-                    print(piece);
-
                     if ((piece.PieceType == PieceType.Bishop || piece.PieceType == PieceType.Queen) & piece.Team != Team)
                     {
                         _attackingPiece = piece;
@@ -239,8 +235,6 @@ public class ChessPiece : MonoBehaviour
 
                 if (piece)
                 {
-                    print(piece);
-
                     if ((piece.PieceType == PieceType.Bishop || piece.PieceType == PieceType.Queen) & piece.Team != Team)
                     {
                         _attackingPiece = piece;
@@ -276,6 +270,31 @@ public class ChessPiece : MonoBehaviour
         }
 
         return true;
+    }
+
+    private bool CheckBackDir(BoardField[,] virtualBoard, BoardField pieceField, BoardField kingField)
+    {
+        int stepX = pieceField.X - kingField.X == 0 ? 0 : pieceField.X - kingField.X < 0 ? 1 : -1;
+        int stepY = pieceField.Y - kingField.Y == 0 ? 0 : pieceField.Y - kingField.Y < 0 ? 1 : -1;
+        int targetX = pieceField.X + stepX;
+        int targetY = pieceField.Y + stepY;
+
+        while (true)
+        {
+            if ((targetX == kingField.X & targetY == kingField.Y) || 
+                targetX == -1 || targetX == 8 || targetY == -1 || targetY == 8) break;
+
+            print($"{pieceField} {targetX} {targetY}");
+
+            ChessPiece piece = virtualBoard[targetX, targetY].GetChessPiece();
+
+            if (piece) return true;
+
+            targetX += stepX;
+            targetY += stepY;
+        }
+
+        return false;
     }
 
     protected virtual void CreateProtectDirection(BoardField[,] virtualBoard, int x, int y)
