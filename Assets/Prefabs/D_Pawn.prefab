@@ -132,6 +132,11 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   animationSpeed: 0.2
+  replacePieces:
+  - {fileID: 7329595328873028135, guid: dadc8bd2c1e46ba4d9c565b7bc30bdd8, type: 3}
+  - {fileID: 174496349715099128, guid: 3fe79f05d5cd99b40ae12eab456cffe2, type: 3}
+  - {fileID: 3098445970930882175, guid: 3449f83007f9cf94996c3f495a754710, type: 3}
+  - {fileID: 926600906209191011, guid: 2f7b86807c466d94bb71b6fa6a034ae3, type: 3}
 --- !u!114 &5250705426252026981
 MonoBehaviour:
   m_ObjectHideFlags: 0

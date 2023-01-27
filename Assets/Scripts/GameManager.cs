@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,6 +9,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GenerateVirtualBoard generateVirtualBoard;
     [SerializeField] private GenerateChessPieces generateChessPieces;
     [SerializeField] private LayerMask boardLayer;
+
+    [Header("UI")]
+    [SerializeField] private GameObject background;
+    [SerializeField] private GameObject pawnChangeMenu;
 
     [Header("Settings")]
     [SerializeField] private LimitFrameRate limitFPS;
@@ -19,6 +24,7 @@ public class GameManager : MonoBehaviour
     private ChessPiece _currentPiece;
     private static int t_countMoves;
     public static GameManager singleton;
+    private BoardField _moveField;
 
     private void Awake()
     {
@@ -35,39 +41,88 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (!EventSystem.current.IsPointerOverGameObject())
         {
-            Ray ray = _playerCamera.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out RaycastHit hit, boardLayer))
+            if (Input.GetMouseButtonDown(0))
             {
-                Transform objectHit = hit.transform;
+                Ray ray = _playerCamera.ScreenPointToRay(Input.mousePosition);
 
-                if (objectHit)
+                if (Physics.Raycast(ray, out RaycastHit hit, boardLayer))
                 {
-                    BoardField field = objectHit.GetComponent<BoardField>();
-                    ChessPiece piece = field.GetChessPiece();
+                    Transform objectHit = hit.transform;
 
-                    if (field.IsActive())
+                    if (objectHit)
                     {
-                        _currentPiece.MoveTo(field);
-                        _currentPiece = null;
-                        t_countMoves++;
+                        BoardField field = objectHit.GetComponent<BoardField>();
+                        ChessPiece piece = field.GetChessPiece();
+
+                        if (field.IsActive())
+                        {
+                            if (_currentPiece.PieceType == PieceType.Pawn & (_currentPiece.Team == TeamColor.White ? field.Y == 0 : field.Y == 7))
+                            {
+                                background.SetActive(true);
+                                pawnChangeMenu.SetActive(true);
+                                _moveField = field;
+
+                                return;
+                            }
+
+                            _currentPiece.MoveTo(field);
+                            _currentPiece = null;
+                            t_countMoves++;
+                            DisableFields();
+                            ChangeGameState();
+
+                            return;
+                        }
+
                         DisableFields();
-                        ChangeGameState();
-
-                        return;
-                    }
-
-                    DisableFields();
-                    if (piece)
-                    {
-                        _currentPiece = piece;
-                        piece.GetPossibleMoves(_virtualBoard, true);
+                        if (piece)
+                        {
+                            _currentPiece = piece;
+                            piece.GetPossibleMoves(_virtualBoard, true);
+                        }
                     }
                 }
             }
         }
+    }
+
+    private void MovePieceAndChangeGameState(BoardField field)
+    {
+        if (_currentPiece.PieceType == PieceType.Pawn & (_currentPiece.Team == TeamColor.White ? field.Y == 0 : field.Y == 7))
+        {
+            background.SetActive(true);
+            pawnChangeMenu.SetActive(true);
+            Invoke(null, Mathf.Infinity);
+        }
+
+        _currentPiece.MoveTo(field);
+        _currentPiece = null;
+        t_countMoves++;
+        DisableFields();
+        ChangeGameState();
+    }
+
+    public void ChangeToPiece(int pieceNumber)
+    {
+        GameObject[] chessPieces = _currentPiece.GetComponent<Pawn>().GetReplacePieces();
+
+        _currentPiece.gameObject.SetActive(false);
+        Transform newPiece = Instantiate(chessPieces[pieceNumber], _currentPiece.transform.position, Quaternion.identity).transform;
+        newPiece.transform.position = _currentPiece.transform.position;
+        ChessPiece piece = newPiece.GetComponent<ChessPiece>();
+        piece.Field = _currentPiece.Field;
+        _currentPiece = piece;
+
+        background.SetActive(false);
+        pawnChangeMenu.SetActive(false);
+
+        _currentPiece.MoveTo(_moveField);
+        _currentPiece = null;
+        t_countMoves++;
+        DisableFields();
+        ChangeGameState();
     }
 
     private void ChangeGameState()

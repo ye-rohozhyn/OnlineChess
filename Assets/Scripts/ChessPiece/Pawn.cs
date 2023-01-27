@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Pawn : ChessPiece
 {
+    [SerializeField] private GameObject[] replacePieces;
     private bool _moveOn2Fields = false;
     private BoardField[,] _virtualBoard;
     private int _lastMoveNumber = 0;
@@ -239,5 +240,10 @@ public class Pawn : ChessPiece
                 }
             }
         }
+    }
+
+    public GameObject[] GetReplacePieces()
+    {
+        return replacePieces;
     }
 }

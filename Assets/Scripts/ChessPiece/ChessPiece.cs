@@ -284,8 +284,6 @@ public class ChessPiece : MonoBehaviour
             if ((targetX == kingField.X & targetY == kingField.Y) || 
                 targetX == -1 || targetX == 8 || targetY == -1 || targetY == 8) break;
 
-            print($"{pieceField} {targetX} {targetY}");
-
             ChessPiece piece = virtualBoard[targetX, targetY].GetChessPiece();
 
             if (piece) return true;
