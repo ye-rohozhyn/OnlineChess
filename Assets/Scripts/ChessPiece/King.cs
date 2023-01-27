@@ -67,9 +67,97 @@ public class King : ChessPiece
             if (PreventCheck(virtualBoard, targetX, targetY))
                 if (CheckField(virtualBoard[targetX, targetY], enableFields)) possibleMoves++;
 
-        if (possibleMoves > 0) EnableSelectOutline();
+        if (CountMoves == 0)
+        {
+            //check right
+            targetY = Field.Y;
+
+            targetX = Field.X + 2;
+            if (targetX < 8)
+            {
+                if (!virtualBoard[targetX, targetY].GetChessPiece())
+                {
+                    targetX = Field.X + 3;
+                    if (targetX < 8)
+                    {
+                        ChessPiece piece = virtualBoard[targetX, targetY].GetChessPiece();
+
+                        if (virtualBoard[targetX, targetY].GetChessPiece())
+                        {
+                            if (piece.PieceType == PieceType.Rook)
+                            {
+                                targetX = Field.X + 2;
+                                if (piece.CountMoves == 0)
+                                {
+                                    if (PreventCheck(virtualBoard, targetX, targetY))
+                                        CheckField(virtualBoard[targetX, targetY], enableFields);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            //check left
+            targetX = Field.X - 2;
+            if (targetX >= 0)
+            {
+                if (!virtualBoard[targetX, targetY].GetChessPiece())
+                {
+                    targetX = Field.X - 3;
+                    if (targetX >= 0)
+                    {
+                        if (!virtualBoard[targetX, targetY].GetChessPiece())
+                        {
+                            targetX = Field.X - 4;
+                            if (targetX >= 0)
+                            {
+                                ChessPiece piece = virtualBoard[targetX, targetY].GetChessPiece();
+
+                                if (virtualBoard[targetX, targetY].GetChessPiece())
+                                {
+                                    if (piece.PieceType == PieceType.Rook)
+                                    {
+                                        targetX = Field.X - 2;
+                                        if (piece.CountMoves == 0)
+                                        {
+                                            if (PreventCheck(virtualBoard, targetX, targetY))
+                                                CheckField(virtualBoard[targetX, targetY], enableFields);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (possibleMoves > 0 & enableFields) EnableSelectOutline();
 
         return possibleMoves;
+    }
+
+    public override void MoveTo(BoardField targetField)
+    {
+        BoardField[,] virtualBoard = GameManager.singleton.GetVirtualBoard();
+        int countMovesX = Field.X - targetField.X;
+        if (countMovesX == 2)
+            virtualBoard[0, Field.Y].GetChessPiece().MoveTo(virtualBoard[3, Field.Y]);
+        else if (countMovesX == -2)
+            virtualBoard[7, Field.Y].GetChessPiece().MoveTo(virtualBoard[5, Field.Y]);
+
+        Field.ClearChessPiece();
+
+        ChessPiece deletePiece = targetField.GetChessPiece();
+        if (deletePiece) deletePiece.Death();
+
+        Field = targetField;
+        targetField.ClearChessPiece();
+        targetField.SetChessPiece(this);
+        StartCoroutine(Move(targetField.transform));
+
+        CountMoves++;
     }
 
     protected override bool CheckField(BoardField field, bool enableFields)
@@ -86,7 +174,7 @@ public class King : ChessPiece
         return true;
     }
 
-    private bool PreventCheck(BoardField[,] virtualBoard, int x, int y)
+    protected override bool PreventCheck(BoardField[,] virtualBoard, int x, int y)
     {
         //horizontal & vertical
         int targetX, targetY;
@@ -99,7 +187,7 @@ public class King : ChessPiece
             {
                 if (Team != piece.Team)
                 {
-                    if (piece.PieceType == PieceType.Rook || piece.PieceType == PieceType.Queen || (piece.PieceType == PieceType.King & i == Field.X - 1))
+                    if (piece.PieceType == PieceType.Rook || piece.PieceType == PieceType.Queen || (piece.PieceType == PieceType.King & i == x - 1))
                     {
                         return false;
                     }
@@ -119,7 +207,7 @@ public class King : ChessPiece
             {
                 if (Team != piece.Team)
                 {
-                    if (piece.PieceType == PieceType.Rook || piece.PieceType == PieceType.Queen || (piece.PieceType == PieceType.King & i == Field.X - 1))
+                    if (piece.PieceType == PieceType.Rook || piece.PieceType == PieceType.Queen || (piece.PieceType == PieceType.King & i == x + 1))
                     {
                         return false;
                     }
@@ -139,7 +227,7 @@ public class King : ChessPiece
             {
                 if (Team != piece.Team)
                 {
-                    if (piece.PieceType == PieceType.Rook || piece.PieceType == PieceType.Queen || (piece.PieceType == PieceType.King & i == Field.X - 1))
+                    if (piece.PieceType == PieceType.Rook || piece.PieceType == PieceType.Queen || (piece.PieceType == PieceType.King & i == y - 1))
                     {
                         return false;
                     }
@@ -159,7 +247,7 @@ public class King : ChessPiece
             {
                 if (Team != piece.Team)
                 {
-                    if (piece.PieceType == PieceType.Rook || piece.PieceType == PieceType.Queen || (piece.PieceType == PieceType.King & i == Field.X - 1))
+                    if (piece.PieceType == PieceType.Rook || piece.PieceType == PieceType.Queen || (piece.PieceType == PieceType.King & i == y + 1))
                     {
                         return false;
                     }

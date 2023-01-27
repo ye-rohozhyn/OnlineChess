@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ChessPiece : MonoBehaviour
@@ -11,11 +13,15 @@ public class ChessPiece : MonoBehaviour
     private Outline _pieceOutline;
     private BoardField _field;
     private int _countMoves = 0;
+    private ChessPiece _attackingPiece;
+    private List<BoardField> _protectDir = new();
 
     public PieceType PieceType { set { _pieceType = value; } get { return _pieceType; } }
     public TeamColor Team { get { return team; } }
     public BoardField Field { set { _field = value; } get { return _field; } }
     public int CountMoves { set { _countMoves = value; } get { return _countMoves; } }
+    public ChessPiece AttackingPiece { get { return _attackingPiece; } }
+    public List<BoardField> ProtectDirection { set { _protectDir = value; } get { return _protectDir; } }
 
     #region - Movement -
 
@@ -80,6 +86,226 @@ public class ChessPiece : MonoBehaviour
 
         if (enableFields) field.Enable();
         return true;
+    }
+
+    protected virtual bool PreventCheck(BoardField[,] virtualBoard, int x, int y)
+    {
+        ChessPiece king = GameManager.singleton.FindKing(Team);
+        int kingX = king.Field.X, kingY = king.Field.Y;
+        _attackingPiece = null;
+
+        if (x > kingX & y < kingY) //top right
+        {
+            int targetX = x + 1, targetY = y - 1;
+
+            for (int i = 1; targetX < 8 & targetY >= 0; i++)
+            {
+                ChessPiece piece = virtualBoard[targetX, targetY].GetChessPiece();
+
+                if (piece)
+                {
+                    print(piece);
+
+                    if ((piece.PieceType == PieceType.Bishop || piece.PieceType == PieceType.Queen) & piece.Team != Team)
+                    {
+                        _attackingPiece = piece;
+                        CreateProtectDirection(virtualBoard, x, y);
+                        return false;
+                    }
+
+                    break;
+                }
+
+                targetX = x + i;
+                targetY = y - i;
+            }
+        }
+        else if (x == kingX & y < kingY) //top
+        {
+            for (int i = y - 1; i >= 0; i--)
+            {
+                ChessPiece piece = virtualBoard[x, i].GetChessPiece();
+
+                if (piece)
+                {
+                    if ((piece.PieceType == PieceType.Rook || piece.PieceType == PieceType.Queen) & piece.Team != Team)
+                    {
+                        _attackingPiece = piece;
+                        CreateProtectDirection(virtualBoard, x, y);
+                        return false;
+                    }
+
+                    break;
+                }
+            }
+        }
+        else if (x < kingX & y < kingY) //top left
+        {
+            int targetX = x - 1, targetY = y - 1;
+
+            for (int i = 1; targetX >= 0 & targetY >= 0; i++)
+            {
+                ChessPiece piece = virtualBoard[targetX, targetY].GetChessPiece();
+
+                if (piece)
+                {
+                    print(piece);
+
+                    if ((piece.PieceType == PieceType.Bishop || piece.PieceType == PieceType.Queen) & piece.Team != Team)
+                    {
+                        _attackingPiece = piece;
+                        CreateProtectDirection(virtualBoard, x, y);
+                        return false;
+                    }
+
+                    break;
+                }
+
+                targetX = x - i; 
+                targetY = y - i;
+            }
+        }
+        else if (x < kingX & y == kingY) //left
+        {
+            for (int i = 1; i < kingX - x; i++)
+            {
+                ChessPiece piece = virtualBoard[i, y].GetChessPiece();
+
+                if (piece)
+                {
+                    if ((piece.PieceType == PieceType.Rook || piece.PieceType == PieceType.Queen) & piece.Team != Team)
+                    {
+                        _attackingPiece = piece;
+                        CreateProtectDirection(virtualBoard, x, y);
+                        return false;
+                    }
+
+                    break;
+                }
+            }
+        }
+        else if (x < kingX & y > kingY) //bottom left
+        {
+            int targetX = x - 1, targetY = y + 1;
+
+            for (int i = 1; targetX >= 0 & targetY < 8; i++)
+            {
+                ChessPiece piece = virtualBoard[targetX, targetY].GetChessPiece();
+
+                if (piece)
+                {
+                    print(piece);
+
+                    if ((piece.PieceType == PieceType.Bishop || piece.PieceType == PieceType.Queen) & piece.Team != Team)
+                    {
+                        _attackingPiece = piece;
+                        CreateProtectDirection(virtualBoard, x, y);
+                        return false;
+                    }
+
+                    break;
+                }
+
+                targetX = x - i;
+                targetY = y + i;
+            }
+        }
+        else if (x == kingX & y > kingY) //bottom
+        {
+            for (int i = 1; i < y - kingY; i++)
+            {
+                ChessPiece piece = virtualBoard[x, i].GetChessPiece();
+
+                if (piece)
+                {
+                    if ((piece.PieceType == PieceType.Rook || piece.PieceType == PieceType.Queen) & piece.Team != Team)
+                    {
+                        _attackingPiece = piece;
+                        CreateProtectDirection(virtualBoard, x, y);
+                        return false;
+                    }
+
+                    break;
+                }
+            }
+        }
+        else if (x > kingX & y > kingY) //bottom right
+        {
+            int targetX = x + 1, targetY = y + 1;
+
+            for (int i = 1; targetX < 8 & targetY < 8; i++)
+            {
+                ChessPiece piece = virtualBoard[targetX, targetY].GetChessPiece();
+
+                if (piece)
+                {
+                    print(piece);
+
+                    if ((piece.PieceType == PieceType.Bishop || piece.PieceType == PieceType.Queen) & piece.Team != Team)
+                    {
+                        _attackingPiece = piece;
+                        CreateProtectDirection(virtualBoard, x, y);
+                        return false;
+                    }
+
+                    break;
+                }
+
+                targetX = x + i;
+                targetY = y + i;
+            }
+        }
+        else if (x > kingX & y == kingY) //right
+        {
+            for (int i = 1; i < x - kingX; i++)
+            {
+                ChessPiece piece = virtualBoard[i, y].GetChessPiece();
+
+                if (piece)
+                {
+                    if ((piece.PieceType == PieceType.Rook || piece.PieceType == PieceType.Queen) & piece.Team != Team)
+                    {
+                        _attackingPiece = piece;
+                        CreateProtectDirection(virtualBoard, x, y);
+                        return false;
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    protected virtual void CreateProtectDirection(BoardField[,] virtualBoard, int x, int y)
+    {
+        _protectDir.Clear();
+        ChessPiece piece = virtualBoard[x, y].GetChessPiece();
+        
+        if (!piece || !AttackingPiece) return;
+        if (piece.PieceType == PieceType.Knight || piece.PieceType == PieceType.Pawn ||
+            AttackingPiece.PieceType == PieceType.Rook & piece.PieceType == PieceType.Bishop ||
+            AttackingPiece.PieceType == PieceType.Bishop & piece.PieceType == PieceType.Rook) return;
+
+        int stepX = AttackingPiece.Field.X - x == 0 ? 0 : AttackingPiece.Field.X - x < 0 ? -1 : 1;
+        int stepY = AttackingPiece.Field.Y - y == 0 ? 0 : AttackingPiece.Field.Y - y < 0 ? -1 : 1;
+        int targetX = x + stepX;
+        int targetY = y + stepY;
+
+        while (true)
+        {
+            if (targetX == AttackingPiece.Field.X & targetY == AttackingPiece.Field.Y)
+            {
+                _protectDir.Add(virtualBoard[targetX, targetY]);
+                break;
+            }
+
+            _protectDir.Add(virtualBoard[targetX, targetY]);
+
+            targetX += stepX;
+            targetY += stepY;
+        }
     }
 
     #endregion

@@ -1,3 +1,5 @@
+using System;
+
 public class Bishop : ChessPiece
 {
     private void Start()
@@ -9,80 +11,114 @@ public class Bishop : ChessPiece
     {
         int possibleMoves = 0;
         int targetX, targetY;
+        BoardField[] protectFields = GameManager.singleton.GetProtectFields().ToArray();
+        int index;
 
-        //check bottom left
-        targetX = Field.X - 1;
-        targetY = Field.Y + 1;
+        ChessPiece king = GameManager.singleton.FindKing(Team);
+        int checkCount = GameManager.singleton.GetCheckCount(king.Field.X, king.Field.Y).Count;
 
-        for (int i = 2; targetX >= 0 & targetY < 8; i++)
+        if (!PreventCheck(virtualBoard, Field.X, Field.Y) & checkCount == 0)
         {
-            if (!CheckField(virtualBoard[targetX, targetY], enableFields))
+            if (ProtectDirection.Count == 0) return 0;
+
+            foreach (BoardField field in ProtectDirection)
             {
-                if (virtualBoard[targetX, targetY].GetChessPiece().Team != Team & enableFields) possibleMoves++;
-                break;
+                if (!CheckField(field, enableFields))
+                    if (enableFields) possibleMoves++;
+            }
+        }
+        else
+        {
+            //check bottom left
+            targetX = Field.X - 1;
+            targetY = Field.Y + 1;
+
+            for (int i = 2; targetX >= 0 & targetY < 8; i++)
+            {
+                index = Array.IndexOf(protectFields, virtualBoard[targetX, targetY]);
+                if (index != -1 & protectFields.Length > 0 || index == -1 & protectFields.Length == 0)
+                {
+                    if (!CheckField(virtualBoard[targetX, targetY], enableFields))
+                    {
+                        if (virtualBoard[targetX, targetY].GetChessPiece().Team != Team & enableFields) possibleMoves++;
+                        break;
+                    }
+
+                    possibleMoves++;
+                }
+
+                targetX = Field.X - i;
+                targetY = Field.Y + i;
             }
 
-            possibleMoves++;
+            //check top right
+            targetX = Field.X + 1;
+            targetY = Field.Y - 1;
 
-            targetX = Field.X - i;
-            targetY = Field.Y + i;
-        }
-
-        //check top right
-        targetX = Field.X + 1;
-        targetY = Field.Y - 1;
-
-        for (int i = 2; targetX < 8 & targetY >= 0; i++)
-        {
-            if (!CheckField(virtualBoard[targetX, targetY], enableFields))
+            for (int i = 2; targetX < 8 & targetY >= 0; i++)
             {
-                if (virtualBoard[targetX, targetY].GetChessPiece().Team != Team & enableFields) possibleMoves++;
-                break;
+                index = Array.IndexOf(protectFields, virtualBoard[targetX, targetY]);
+                if (index != -1 & protectFields.Length > 0 || index == -1 & protectFields.Length == 0)
+                {
+                    if (!CheckField(virtualBoard[targetX, targetY], enableFields))
+                    {
+                        if (virtualBoard[targetX, targetY].GetChessPiece().Team != Team & enableFields) possibleMoves++;
+                        break;
+                    }
+
+                    possibleMoves++;
+                }
+
+                targetX = Field.X + i;
+                targetY = Field.Y - i;
             }
 
-            possibleMoves++;
+            //check bottom right
+            targetX = Field.X + 1;
+            targetY = Field.Y + 1;
 
-            targetX = Field.X + i;
-            targetY = Field.Y - i;
-        }
-
-        //check bottom right
-        targetX = Field.X + 1;
-        targetY = Field.Y + 1;
-
-        for (int i = 2; targetX < 8 & targetY < 8; i++)
-        {
-            if (!CheckField(virtualBoard[targetX, targetY], enableFields))
+            for (int i = 2; targetX < 8 & targetY < 8; i++)
             {
-                if (virtualBoard[targetX, targetY].GetChessPiece().Team != Team & enableFields) possibleMoves++;
-                break;
+                index = Array.IndexOf(protectFields, virtualBoard[targetX, targetY]);
+                if (index != -1 & protectFields.Length > 0 || index == -1 & protectFields.Length == 0)
+                {
+                    if (!CheckField(virtualBoard[targetX, targetY], enableFields))
+                    {
+                        if (virtualBoard[targetX, targetY].GetChessPiece().Team != Team & enableFields) possibleMoves++;
+                        break;
+                    }
+
+                    possibleMoves++;
+                }
+
+                targetX = Field.X + i;
+                targetY = Field.Y + i;
             }
 
-            possibleMoves++;
+            //check top left
+            targetX = Field.X - 1;
+            targetY = Field.Y - 1;
 
-            targetX = Field.X + i;
-            targetY = Field.Y + i;
-        }
-
-        //check top left
-        targetX = Field.X - 1;
-        targetY = Field.Y - 1;
-
-        for (int i = 2; targetX >= 0 & targetY >= 0; i++)
-        {
-            if (!CheckField(virtualBoard[targetX, targetY], enableFields))
+            for (int i = 2; targetX >= 0 & targetY >= 0; i++)
             {
-                if (virtualBoard[targetX, targetY].GetChessPiece().Team != Team & enableFields) possibleMoves++;
-                break;
+                index = Array.IndexOf(protectFields, virtualBoard[targetX, targetY]);
+                if (index != -1 & protectFields.Length > 0 || index == -1 & protectFields.Length == 0)
+                {
+                    if (!CheckField(virtualBoard[targetX, targetY], enableFields))
+                    {
+                        if (virtualBoard[targetX, targetY].GetChessPiece().Team != Team & enableFields) possibleMoves++;
+                        break;
+                    }
+
+                    possibleMoves++;
+                }
+
+                targetX = Field.X - i;
+                targetY = Field.Y - i;
             }
-
-            possibleMoves++;
-
-            targetX = Field.X - i;
-            targetY = Field.Y - i;
         }
 
-        if (possibleMoves > 0) EnableSelectOutline();
+        if (possibleMoves > 0 & enableFields) EnableSelectOutline();
 
         return possibleMoves;
     }

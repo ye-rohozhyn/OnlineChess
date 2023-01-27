@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Pawn : ChessPiece
@@ -22,21 +23,19 @@ public class Pawn : ChessPiece
 
         if (Team == TeamColor.White & targetY >= 0 || Team == TeamColor.Black & targetY < 8)
         {
-            if (CheckField(virtualBoard[targetX, targetY], enableFields))
+            if (CheckField(virtualBoard[targetX, targetY], enableFields)) possibleMoves++;
+
+            if (CountMoves == 0 & !virtualBoard[targetX, targetY].GetChessPiece())
             {
-                possibleMoves++;
+                targetY = Team == TeamColor.White ? (Field.Y - 2) : (Field.Y + 2);
 
-                if (CountMoves == 0)
+                if (Team == TeamColor.White & targetY >= 0 || Team == TeamColor.Black & targetY < 8)
                 {
-                    targetY = Team == TeamColor.White ? (Field.Y - 2) : (Field.Y + 2);
 
-                    if (Team == TeamColor.White & targetY >= 0 || Team == TeamColor.Black & targetY < 8)
-                    {
-                        if (CheckField(virtualBoard[targetX, targetY], enableFields)) possibleMoves++;
-                    }
-
-                    targetY = Team == TeamColor.White ? (Field.Y - 1) : (Field.Y + 1);
+                    if (CheckField(virtualBoard[targetX, targetY], enableFields)) possibleMoves++;
                 }
+
+                targetY = Team == TeamColor.White ? (Field.Y - 1) : (Field.Y + 1);
             }
 
             targetX = Field.X - 1;
@@ -52,7 +51,7 @@ public class Pawn : ChessPiece
                     Pawn pawn = virtualBoard[targetX, Field.Y].GetChessPiece().GetComponent<Pawn>();
                     if (pawn)
                     {
-                        if (pawn.Team != Team & pawn.CountMoves == 1 & pawn._moveOn2Fields & pawn._lastMoveNumber == GameManager.GetCountMoves())
+                        if (pawn.Team != Team & pawn.CountMoves == 1 & pawn._moveOn2Fields & pawn._lastMoveNumber == GameManager.singleton.GetCountMoves())
                         {
                             if (CheckField(virtualBoard[targetX, targetY], enableFields))
                                 possibleMoves++;
@@ -74,7 +73,7 @@ public class Pawn : ChessPiece
                     Pawn pawn = virtualBoard[targetX, Field.Y].GetChessPiece().GetComponent<Pawn>();
                     if (pawn)
                     {
-                        if (pawn.Team != Team & pawn.CountMoves == 1 & pawn._moveOn2Fields & pawn._lastMoveNumber == GameManager.GetCountMoves())
+                        if (pawn.Team != Team & pawn.CountMoves == 1 & pawn._moveOn2Fields & pawn._lastMoveNumber == GameManager.singleton.GetCountMoves())
                         {
                             if (CheckField(virtualBoard[targetX, targetY], enableFields))
                                 possibleMoves++;
@@ -109,7 +108,7 @@ public class Pawn : ChessPiece
         targetField.SetChessPiece(this);
         StartCoroutine(Move(targetField.transform));
         CountMoves++;
-        _lastMoveNumber = GameManager.GetCountMoves() + 1;
+        _lastMoveNumber = GameManager.singleton.GetCountMoves() + 1;
     }
 
     protected override bool CheckField(BoardField field, bool enableFields)
@@ -118,8 +117,16 @@ public class Pawn : ChessPiece
 
         if (piece) return false;
 
-        if (enableFields) field.Enable();
-        return true;
+        BoardField[] protectFields = GameManager.singleton.GetProtectFields().ToArray();
+        int index = Array.IndexOf(protectFields, GameManager.singleton.GetVirtualBoard()[field.X, field.Y]);
+
+        if (index != -1 & protectFields.Length > 0 || index == -1 & protectFields.Length == 0)
+        {
+            if (enableFields) field.Enable();
+            return true;
+        }
+
+        return false;
     }
 
     private bool CheckAttackField(BoardField field, bool enableFields)
@@ -130,7 +137,14 @@ public class Pawn : ChessPiece
         {
             if (piece.Team != Team & enableFields)
             {
-                field.Enable();
+                BoardField[] protectFields = GameManager.singleton.GetProtectFields().ToArray();
+                int index = Array.IndexOf(protectFields, GameManager.singleton.GetVirtualBoard()[field.X, field.Y]);
+
+                if (index != -1 & protectFields.Length > 0 || index == -1 & protectFields.Length == 0)
+                {
+                    field.Enable();
+                }
+
                 return true;
             }
         }

@@ -1,3 +1,5 @@
+using System;
+
 public class Rook : ChessPiece
 {
     private void Start()
@@ -8,59 +10,90 @@ public class Rook : ChessPiece
     public override int GetPossibleMoves(BoardField[,] virtualBoard, bool enableFields)
     {
         int possibleMoves = 0;
+        BoardField[] protectFields = GameManager.singleton.GetProtectFields().ToArray();
+        int index;
 
-        int x = Field.X;
-        int y = Field.Y;
+        ChessPiece king = GameManager.singleton.FindKing(Team);
+        int checkCount = GameManager.singleton.GetCheckCount(king.Field.X, king.Field.Y).Count;
 
-        //check left
-        for (int i = x - 1; i >= 0; i--)
+        if (!PreventCheck(virtualBoard, Field.X, Field.Y) & checkCount == 0)
         {
-            if (!CheckField(virtualBoard[i, y], enableFields))
+            if (ProtectDirection.Count == 0) return 0;
+
+            foreach (BoardField field in ProtectDirection)
             {
-                if (virtualBoard[i, y].GetChessPiece().Team != Team & enableFields) possibleMoves++;
-                break;
+                if (!CheckField(field, enableFields))
+                    if (enableFields) possibleMoves++;
+            }
+        }
+        else
+        {
+            //check left
+            for (int i = Field.X - 1; i >= 0; i--)
+            {
+                index = Array.IndexOf(protectFields, virtualBoard[i, Field.Y]);
+                if (index != -1 & protectFields.Length > 0 || index == -1 & protectFields.Length == 0)
+                {
+                    if (!CheckField(virtualBoard[i, Field.Y], enableFields))
+                    {
+                        if (virtualBoard[i, Field.Y].GetChessPiece().Team != Team & enableFields) possibleMoves++;
+                        break;
+                    }
+
+                    possibleMoves++;
+                }
             }
 
-            possibleMoves++;
-        }
-
-        //check right
-        for (int i = x + 1; i <= 7; i++)
-        {
-            if (!CheckField(virtualBoard[i, y], enableFields))
+            //check right
+            for (int i = Field.X + 1; i <= 7; i++)
             {
-                if (virtualBoard[i, y].GetChessPiece().Team != Team & enableFields) possibleMoves++;
-                break;
+                index = Array.IndexOf(protectFields, virtualBoard[i, Field.Y]);
+                if (index != -1 & protectFields.Length > 0 || index == -1 & protectFields.Length == 0)
+                {
+                    if (!CheckField(virtualBoard[i, Field.Y], enableFields))
+                    {
+                        if (virtualBoard[i, Field.Y].GetChessPiece().Team != Team & enableFields) possibleMoves++;
+                        break;
+                    }
+
+                    possibleMoves++;
+                }
             }
 
-            possibleMoves++;
-        }
-
-        //check top
-        for (int i = y - 1; i >= 0; i--)
-        {
-            if (!CheckField(virtualBoard[x, i], enableFields))
+            //check top
+            for (int i = Field.Y - 1; i >= 0; i--)
             {
-                if (virtualBoard[x, i].GetChessPiece().Team != Team & enableFields) possibleMoves++;
-                break;
+                index = Array.IndexOf(protectFields, virtualBoard[Field.X, i]);
+                if (index != -1 & protectFields.Length > 0 || index == -1 & protectFields.Length == 0)
+                {
+                    if (!CheckField(virtualBoard[Field.X, i], enableFields))
+                    {
+                        if (virtualBoard[Field.X, i].GetChessPiece().Team != Team & enableFields) possibleMoves++;
+                        break;
+                    }
+
+                    possibleMoves++;
+                }
             }
 
-            possibleMoves++;
-        }
-
-        //check bottom
-        for (int i = y + 1; i <= 7; i++)
-        {
-            if (!CheckField(virtualBoard[x, i], enableFields))
+            //check bottom
+            for (int i = Field.Y + 1; i <= 7; i++)
             {
-                if (virtualBoard[x, i].GetChessPiece().Team != Team & enableFields) possibleMoves++;
-                break;
-            }
+                index = Array.IndexOf(protectFields, virtualBoard[Field.X, i]);
+                if (index != -1 & protectFields.Length > 0 || index == -1 & protectFields.Length == 0)
+                {
+                    if (!CheckField(virtualBoard[Field.X, i], enableFields))
+                    {
+                        if (virtualBoard[Field.X, i].GetChessPiece().Team != Team & enableFields) possibleMoves++;
+                        break;
+                    }
 
-            possibleMoves++;
+                    possibleMoves++;
+                }
+            }
         }
 
-        if (possibleMoves > 0) EnableSelectOutline();
+        if (possibleMoves > 0 & enableFields) EnableSelectOutline();
 
         return possibleMoves;
     }
